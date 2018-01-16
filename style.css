@@ -1,0 +1,18 @@
+.containerForm{
+    border: 1px grey solid;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+#warningln, #warningfn, #warningbd{
+    color: red;
+    font-size: 14px;
+    display:none;
+}
+
+.containerOptions{
+    border: 1px solid grey;
+}
+
+table{
+    border:1px, solid, black;
+}
