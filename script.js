@@ -4,12 +4,13 @@ $(function(){
     var currentMonth = parseInt(date.getMonth()+1);
     var currentDay = date.getDate();
     var error = false;
+    var personArray = [];
 
     $(submitBtn).click(function(){
         var firstName = $(fname).val();
         var lastName = $(lname).val();
 
-        //testing if ame inputs are valid
+        //testing if inputs are valid
         if(firstName.trim().length<2){
             $(warningfn).css("display", "block");
             error = true;
@@ -77,40 +78,52 @@ $(function(){
     })
 
     function printTable(){
+        //creating person object
+        var person = {
+            firstName : $(fname).val(),
+            lastName : $(lname).val(),
+            bdate : $(bdate).val(),
+            gender: getGender(),
+        };
+
+
+        personArray.push(person);
+        console.log(personArray.length);
+
         var tableDiv = $(dynamicTable);
         var table = $("<table/>");
         var line = $("<tr/>");
         var thead = $("<thead/>");
+        var col = $("<td/>");
+        var tbody = $("<tbody/>");
+        var header = '<th>First Name</th><th>Last Name</th><th>Birth Date</th><th>Gender</th><th>Delete</th>';
         
+        //removing previous table
+        document.getElementById('dynamicTable').innerHTML = "";
+
         $(tableDiv).addClass('mt-4 container');
+        $(tableDiv).append(table);
         $(table).addClass('table table-stripped  row align-items-center justify-content-center ');
-        $(thead).addClass('thead-light');
+        $(table).append(thead);
+        $(thead).addClass('thead-inverse');
+        $(thead).append(header);
+        $(thead).append(tbody);
         
-        tableDiv.append(table);
-        table.append(line);
-        line.append(thead);
-
-        var headCol1 = $("<th/>");
-        thead.append(headCol1);
-        $(headCol1).append('First Name');
-
-        var headCol2 = $("<th/>");
-        thead.append(headCol2);
-        $(headCol2).append('Last Name');
-
-        var headCol3 = $("<th/>");
-        thead.append(headCol3);
-        $(headCol3).append('Birth date');
-        
-        var headCol4 = $("<th/>");
-        thead.append(headCol4);
-        $(headCol4).append('Gender');
-
-        var headCol5 = $("<th/>");
-        thead.append(headCol5);
-        $(headCol5).append('Delete');
-        
+        //adding users to table
+        for(i=0;i<personArray.length;i++){
+            $(tbody).append('<tr><td>'+personArray[i].firstName+'</td><td>'+personArray[i].lastName+'</td><td>'+personArray[i].bdate+'</td> <td>'+personArray[i].gender+'</td><tr>');
+        }
     
+        }
+
+        function getGender(){
+            var maleBox = document.getElementById('maleBox');
+            if(maleBox.checked){
+                return 'male';
+            }
+            else{
+                return 'female';
+            }
         }
 
 });
