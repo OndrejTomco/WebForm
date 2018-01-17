@@ -1,3 +1,4 @@
+
 $(function(){
     var date = new Date();
     var currentYear = date.getFullYear();
@@ -5,12 +6,20 @@ $(function(){
     var currentDay = date.getDate();
     var error = false;
     var personArray = [];
+    var maleArray = [];
+    var femaleArray = [];
+    
 
-    $(submitBtn).click(function(){
+    $(submitBtn).click(verifyInput);
+    $("#sel1").change(printTable);
+    $("#ageBox").click(printTable);
+    
+    function verifyInput(){
+
         var firstName = $(fname).val();
         var lastName = $(lname).val();
 
-        //testing if inputs are valid
+        //testing if name inputs are valid
         if(firstName.trim().length<2){
             $(warningfn).css("display", "block");
             error = true;
@@ -33,6 +42,7 @@ $(function(){
 
         // testing if date is valid
         var splitDate = $(bdate).val().split('-');
+        console.log(splitDate);
 
         if(splitDate[0]>currentYear){
             $(warningbd).css("display", "block");
@@ -70,60 +80,125 @@ $(function(){
             error = true;
         }
 
-        console.log(error);
         if(error == false){
-            printTable();
+            createPerson();
         }
         
-    })
+    }
 
-    function printTable(){
-        //creating person object
+    function createPerson(){
         var person = {
             firstName : $(fname).val(),
             lastName : $(lname).val(),
             bdate : $(bdate).val(),
             gender: getGender(),
+            age: calculateAge()
         };
 
-
         personArray.push(person);
-        console.log(personArray.length);
 
-        var tableDiv = $(dynamicTable);
-        var table = $("<table/>");
-        var line = $("<tr/>");
-        var thead = $("<thead/>");
-        var col = $("<td/>");
-        var tbody = $("<tbody/>");
-        var header = '<th>First Name</th><th>Last Name</th><th>Birth Date</th><th>Gender</th><th>Delete</th>';
+        if(person.gender == 'Male'){
+            maleArray.push(person);
+        }
+        else if(person.gender == 'Female'){
+            femaleArray.push(person);
+        }
+
+        printTable();
         
-        //removing previous table
-        document.getElementById('dynamicTable').innerHTML = "";
 
-        $(tableDiv).addClass('mt-4 container');
-        $(tableDiv).append(table);
-        $(table).addClass('table table-stripped  row align-items-center justify-content-center ');
-        $(table).append(thead);
-        $(thead).addClass('thead-inverse');
-        $(thead).append(header);
-        $(thead).append(tbody);
+    }
+
+    function getGender(){
+        var maleBox = document.getElementById('maleBox');
+        if(maleBox.checked){
+            return 'Male';
+        }
+        else{
+            return 'Female';
+        }
+    }
+
+    function printTable(){
+
+        var birthOrAge = [];
         
-        //adding users to table
-        for(i=0;i<personArray.length;i++){
-            $(tbody).append('<tr><td>'+personArray[i].firstName+'</td><td>'+personArray[i].lastName+'</td><td>'+personArray[i].bdate+'</td> <td>'+personArray[i].gender+'</td><tr>');
-        }
-    
+        if(personArray.length == 0){
+            $(".dynamicTable").css("display","none");
+            return 0;
         }
 
-        function getGender(){
-            var maleBox = document.getElementById('maleBox');
-            if(maleBox.checked){
-                return 'male';
-            }
-            else{
-                return 'female';
+        $("tbody").empty();
+        $(".dynamicTable").css("display","block");
+
+        if ($('#ageBox').is(':checked')){
+            $("#bdateHead").html('Age');
+            for(i=0;i<personArray.length;i++){
+                birthOrAge[i] = personArray[i].age;
             }
         }
+
+        else{
+            $("#bdateHead").html('Birth Date');
+            for(i=0;i<personArray.length;i++){
+            birthOrAge[i] = personArray[i].bdate;
+            }
+        }
+        
+
+        if($("#sel1").val()==1){
+            for(i=0;i<personArray.length;i++){
+                $("tbody").append('<tr><td>'+personArray[i].firstName+'</td><td>'+personArray[i].lastName+'</td><td>'+birthOrAge[i]+'</td> <td>'+personArray[i].gender+'</td><td>Delete</td><tr>');
+            }
+        }
+
+        else if($("#sel1").val()==2){
+            if(maleArray.length == 0){
+                $(".dynamicTable").css("display","none");
+            }
+            for(i=0;i<maleArray.length;i++){
+                $("tbody").append('<tr><td>'+maleArray[i].firstName+'</td><td>'+maleArray[i].lastName+'</td><td>'+birthOrAge[i]+'</td> <td>'+maleArray[i].gender+'</td><td>Delete</td><tr>');
+            }
+        }
+
+        else{
+            if(femaleArray.length == 0){
+                $(".dynamicTable").css("display","none");
+            }
+            for(i=0;i<femaleArray.length;i++){
+                $("tbody").append('<tr><td>'+femaleArray[i].firstName+'</td><td>'+femaleArray[i].lastName+'</td><td>'+birthOrAge[i]+'</td> <td>'+femaleArray[i].gender+'</td><td>Delete</td><tr>');
+            }
+
+        }
+
+    }
+
+    function calculateAge(user){
+
+            splitDate = $(bdate).val().split('-');
+            console.log(splitDate);
+            var age = currentYear - splitDate[0];
+            console.log(currentYear,splitDate[0]);
+
+            if(currentMonth==splitDate[1]) {
+                if(currentDay>=splitDate[2]) {
+                    return age
+                }
+                else {
+                    return age-1;
+                }
+            }
+        
+            else if(currentMonth > splitDate[1]) {
+                return age;
+            }
+                
+            else if(currentMonth<splitDate[1]) {
+                return age-1;
+            }
+            
+    }
 
 });
+
+    
