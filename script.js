@@ -133,15 +133,42 @@ $(function(){
 
         if ($('#ageBox').is(':checked')){
             $("#bdateHead").html('Age');
-            for(i=0;i<personArray.length;i++){
-                birthOrAge[i] = personArray[i].age;
+            if($("#sel1").val()==2){
+                for(i=0;i<maleArray.length;i++){
+                    birthOrAge[i] = maleArray[i].age;
+                }
             }
+
+            if($("#sel1").val()==3){
+                for(i=0;i<femaleArray.length;i++){
+                    birthOrAge[i] = femaleArray[i].age;
+                }
+            }
+            else{
+                for(i=0;i<personArray.length;i++){
+                    birthOrAge[i] = personArray[i].age;
+                }
+            }
+            
         }
 
-        else{
+        else{   
             $("#bdateHead").html('Birth Date');
-            for(i=0;i<personArray.length;i++){
-            birthOrAge[i] = personArray[i].bdate;
+            if($("#sel1").val()==2){
+                for(i=0;i<maleArray.length;i++){
+                    birthOrAge[i] = maleArray[i].bdate;
+                }
+            }
+
+            if($("#sel1").val()==3){
+                for(i=0;i<femaleArray.length;i++){
+                    birthOrAge[i] = femaleArray[i].bdate;
+                }
+            }
+            else{
+                for(i=0;i<personArray.length;i++){
+                    birthOrAge[i] = personArray[i].bdate;
+                }
             }
         }
         
@@ -173,7 +200,7 @@ $(function(){
 
     }
 
-    function calculateAge(user){
+    function calculateAge(){
 
             splitDate = $(bdate).val().split('-');
             console.log(splitDate);
