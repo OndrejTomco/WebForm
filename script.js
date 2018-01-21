@@ -6,13 +6,16 @@ $(function(){
     var currentDay = date.getDate();
     var error = false;
     var personArray = [];
-    var maleArray = [];
-    var femaleArray = [];
     
-
     $(submitBtn).click(verifyInput);
     $("#sel1").change(printTable);
     $("#ageBox").click(printTable);
+
+    $("#submitBtn").click(function() {
+        $('html,body').animate({
+            scrollTop: $(".dynamicTable").offset().top},
+            'normal');
+    });
     
     function verifyInput(){
 
@@ -91,25 +94,18 @@ $(function(){
             firstName : $(fname).val(),
             lastName : $(lname).val(),
             bdate : $(bdate).val(),
-            gender: getGender(),
-            age: calculateAge()
+            gender: getPersonGender(),
+            age: calculateAge(),
+            id: personArray.length +1
         };
 
         personArray.push(person);
 
-        if(person.gender == 'Male'){
-            maleArray.push(person);
-        }
-        else if(person.gender == 'Female'){
-            femaleArray.push(person);
-        }
-
         printTable();
-        
-
+    
     }
 
-    function getGender(){
+    function getPersonGender(){
         var maleBox = document.getElementById('maleBox');
         if(maleBox.checked){
             return 'Male';
@@ -119,93 +115,77 @@ $(function(){
         }
     }
 
+    function getSelectedGender(){
+        var selectedGender = $("#sel1").val();
+        return selectedGender;
+     }
+
     function printTable(){
 
-        var birthOrAge = [];
-        
-        if(personArray.length == 0){
+        var personCopy = new Array();
+        var selectedGender = getSelectedGender();
+
+        personArray.forEach(function(obj){
+
+            if(selectedGender == 'M' && obj.gender=='Male'){
+                 personCopy.push(obj);
+            }
+            if(selectedGender == 'F' && obj.gender=='Female'){
+                 personCopy.push(obj);
+            }
+            if(selectedGender == 'B'){            
+                 personCopy.push(obj);
+            }
+          });
+
+        if(personCopy.length == 0){
             $(".dynamicTable").css("display","none");
             return 0;
         }
 
         $("tbody").empty();
-        $(".dynamicTable").css("display","block");
+        $(".dynamicTable").fadeIn("normal");
 
-        if ($('#ageBox').is(':checked')){
-            $("#bdateHead").html('Age');
-            if($("#sel1").val()==2){
-                for(i=0;i<maleArray.length;i++){
-                    birthOrAge[i] = maleArray[i].age;
-                }
-            }
-
-            if($("#sel1").val()==3){
-                for(i=0;i<femaleArray.length;i++){
-                    birthOrAge[i] = femaleArray[i].age;
-                }
+        personCopy.forEach(function(obj){
+            var dateOrAge;
+            
+            if ($('#ageBox').is(':checked')){
+                dateOrAge = obj.age;
+                $('#bdateHead').html('Age');
             }
             else{
-                for(i=0;i<personArray.length;i++){
-                    birthOrAge[i] = personArray[i].age;
+                dateOrAge = obj.bdate;
+                $('#bdateHead').html('Birth date');
+            }
+            $('#myTable > tbody').append('<tr id="'+obj.id+'"><td>'+ obj.firstName+'</td><td>'+ obj.lastName+'</td><td>'+dateOrAge+'</td><td>'+ obj.gender+'</td><td class="delete"><button class="btn btn-danger btn-sm">Remove</button></td></tr>');
+            console.log(obj);
+        });
+
+        
+         $(".delete").click(function(){
+            var row = this.parentNode;
+            row.remove();
+            
+            for(i=0;i<personArray.length;i++){
+                if(row.id == personArray[i].id){
+                    personArray.splice(i,1);
                 }
             }
             
-        }
+            if(personArray.length == 0){
+                $(".dynamicTable").fadeOut('normal');
+            }
+                
+         });
 
-        else{   
-            $("#bdateHead").html('Birth Date');
-            if($("#sel1").val()==2){
-                for(i=0;i<maleArray.length;i++){
-                    birthOrAge[i] = maleArray[i].bdate;
-                }
-            }
-
-            if($("#sel1").val()==3){
-                for(i=0;i<femaleArray.length;i++){
-                    birthOrAge[i] = femaleArray[i].bdate;
-                }
-            }
-            else{
-                for(i=0;i<personArray.length;i++){
-                    birthOrAge[i] = personArray[i].bdate;
-                }
-            }
-        }
-        
-
-        if($("#sel1").val()==1){
-            for(i=0;i<personArray.length;i++){
-                $("tbody").append('<tr><td>'+personArray[i].firstName+'</td><td>'+personArray[i].lastName+'</td><td>'+birthOrAge[i]+'</td> <td>'+personArray[i].gender+'</td><td>Delete</td><tr>');
-            }
-        }
-
-        else if($("#sel1").val()==2){
-            if(maleArray.length == 0){
-                $(".dynamicTable").css("display","none");
-            }
-            for(i=0;i<maleArray.length;i++){
-                $("tbody").append('<tr><td>'+maleArray[i].firstName+'</td><td>'+maleArray[i].lastName+'</td><td>'+birthOrAge[i]+'</td> <td>'+maleArray[i].gender+'</td><td>Delete</td><tr>');
-            }
-        }
-
-        else{
-            if(femaleArray.length == 0){
-                $(".dynamicTable").css("display","none");
-            }
-            for(i=0;i<femaleArray.length;i++){
-                $("tbody").append('<tr><td>'+femaleArray[i].firstName+'</td><td>'+femaleArray[i].lastName+'</td><td>'+birthOrAge[i]+'</td> <td>'+femaleArray[i].gender+'</td><td>Delete</td><tr>');
-            }
+         $('.containerForm :input').val('');
 
         }
-
-    }
 
     function calculateAge(){
 
             splitDate = $(bdate).val().split('-');
-            console.log(splitDate);
             var age = currentYear - splitDate[0];
-            console.log(currentYear,splitDate[0]);
 
             if(currentMonth==splitDate[1]) {
                 if(currentDay>=splitDate[2]) {
@@ -225,6 +205,7 @@ $(function(){
             }
             
     }
+
 
 });
 
