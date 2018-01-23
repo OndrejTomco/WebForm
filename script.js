@@ -1,11 +1,10 @@
-
 $(function(){
     var date = new Date();
     var currentYear = date.getFullYear();
     var currentMonth = parseInt(date.getMonth()+1);
     var currentDay = date.getDate();
-    var error = false;
-    var personArray = [];
+    var error = 0;
+    var personArray = new Array();
     
     $(submitBtn).click(verifyInput);
     $("#sel1").change(printTable);
@@ -16,6 +15,8 @@ $(function(){
             scrollTop: $(".dynamicTable").offset().top},
             'normal');
     });
+
+   
     
     function verifyInput(){
 
@@ -25,71 +26,74 @@ $(function(){
         //testing if name inputs are valid
         if(firstName.trim().length<2){
             $(warningfn).css("display", "block");
-            error = true;
+            error++;
             
         }
         else{
             $(warningfn).css("display", "none");
-            errpr = false;
+    
         }
 
         if(lastName.trim().length<2){
             $(warningln).css("display", "block");
-            error = true;
+            error++;
             
         }
         else{
             $(warningln).css("display", "none");
-            error = false;
+            
         }
 
         // testing if date is valid
         var splitDate = $(bdate).val().split('-');
-        console.log(splitDate);
 
         if(splitDate[0]>currentYear){
             $(warningbd).css("display", "block");
-            error = true;
+            error ++;
         }
         else if(splitDate[0]==currentYear){
              if(splitDate[1]>currentMonth){
                 $(warningbd).css("display", "block");
-                error = true;
+                error ++;
              }
             
              else if(splitDate[1]==currentMonth){
                  if(splitDate[2]>currentDay){
                     $(warningbd).css("display", "block");
-                    error = true;
+                    error ++;
                  }
                  else{
                     $(warningbd).css("display", "none");
-                    error = false;
+        
                  }
              }
              else{
                 $(warningbd).css("display", "none");
-                error = false;
+    
              }
          }
          else{
             $(warningbd).css("display", "none");
-            error = false;
+
          }
 
          //if date is set
          if(isNaN ( splitDate[0] || splitDate[1] ||splitDate[2] )) {
             $(warningbd).css("display", "block");
-            error = true;
+            error++;
         }
 
-        if(error == false){
+        if(error < 1){
             createPerson();
+        }
+        else{
+            error = 0;
         }
         
     }
 
     function createPerson(){
+
         var person = {
             firstName : $(fname).val(),
             lastName : $(lname).val(),
@@ -139,7 +143,7 @@ $(function(){
           });
 
         if(personCopy.length == 0){
-            $(".dynamicTable").css("display","none");
+            $(".dynamicTable").fadeOut("normal");
             return 0;
         }
 
@@ -158,13 +162,18 @@ $(function(){
                 $('#bdateHead').html('Birth date');
             }
             $('#myTable > tbody').append('<tr id="'+obj.id+'"><td>'+ obj.firstName+'</td><td>'+ obj.lastName+'</td><td>'+dateOrAge+'</td><td>'+ obj.gender+'</td><td class="delete"><button class="btn btn-danger btn-sm">Remove</button></td></tr>');
-            console.log(obj);
         });
 
         
          $(".delete").click(function(){
+
             var row = this.parentNode;
-            row.remove();
+            $(this).closest('tr')
+            .children('td')
+            .animate({ padding: 0 })
+            .wrapInner('<div />')
+            .children()
+            .slideUp(function() { $(this).closest('tr').remove(); });
             
             for(i=0;i<personArray.length;i++){
                 if(row.id == personArray[i].id){
@@ -206,7 +215,30 @@ $(function(){
             
     }
 
+    $("#btnSave").click(function(){
+
+        
+        if(personArray.length == 0){
+            return 0;
+        }
+
+        if (typeof(Storage) !== "undefined") {
+           localStorage.personArray = JSON.stringify(personArray);
+
+         }
+    });
+
+    $("#btnLoad").click(function(){
+
+        if (typeof(Storage) !== "undefined") {
+            personArray = JSON.parse(localStorage.personArray);
+            printTable();
+           
+        } else {
+            // Sorry! No Web Storage support..
+        }
+        
+    });
+
 
 });
-
-    

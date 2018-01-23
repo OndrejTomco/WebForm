@@ -1,5 +1,6 @@
 .containerForm{
-    border: 1px grey solid;
+    /* border: 2px grey solid; */
+    -webkit-box-shadow: 2px 3px 43px -6px rgba(0,0,0,0.75);
     border-radius: 8px;
     margin-top: 20px;
 }
@@ -10,14 +11,21 @@
 }
 
 .containerOptions{
-    border: 1px solid grey;
-    border-radius: 8px;
+    /* border: 2px solid grey;
+    border-radius: 8px; */
+    -webkit-box-shadow: 2px 3px 43px -6px rgba(0,0,0,0.75);
 }
 
 .table{
     margin: 0 auto;
+    
 }
 
 .delete {
     cursor: pointer;
+  }
+
+  #storage{
+    text-align: center;
+    
   }
